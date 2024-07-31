@@ -1,0 +1,16 @@
+apiVersion: v2
+appVersion: 2.14.0-b90cb316-Ubuntu22
+description: A Helm chart for OpenVPN Access Server.
+home: https://github.com/tdg5/helm-charts/tree/main/charts/openvpn-as
+icon: https://raw.githubusercontent.com/tdg5/helm-charts/main/charts/openvpn-as/openvpn-as-icon.png
+maintainers:
+- email: dannyguinther@gmail.com
+  name: Danny Guinther
+name: openvpn-as
+sources:
+- https://github.com/tdg5/helm-charts/tree/main/charts/openvpn-as
+- https://github.com/stenic/helm-charts/tree/master/charts/openvpn-as
+- https://hub.docker.com/r/openvpn/openvpn-as
+- https://openvpn.net/vpn-server/
+type: application
+version: 0.0.1

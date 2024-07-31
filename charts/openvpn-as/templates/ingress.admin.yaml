@@ -1,0 +1,36 @@
+{{- if .Values.ingress.admin.enabled -}}
+{{- $fullName := include "openvpn-as.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    {{- with .Values.ingress.admin.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "openvpn-as.labels" . | nindent 4 }}
+  name: {{ $fullName }}-admin
+spec:
+  {{- if .Values.ingress.admin.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.admin.ingressClassName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.admin.hostName | quote }}
+      http:
+        paths:
+        - backend:
+            service:
+              name: {{ $fullName }}-admin
+              port:
+                number: {{ .Values.openvpn.ports.admin }}
+          path: "/"
+          pathType: Prefix
+  {{- if .Values.ingress.admin.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.admin.hostName | quote }}
+      secretName: {{ .Values.ingress.admin.tls.secretName }}
+  {{- end }}
+{{- end }}

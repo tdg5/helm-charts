@@ -1,0 +1,164 @@
+# -- Affinity labels for pod assignment
+affinity: {}
+
+fullnameOverride: ""
+
+image:
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+  # -- Image repository
+  repository: openvpn/openvpn-as
+
+  # -- Image tag
+  tag: ""
+
+# -- Registry secret names as an array
+imagePullSecrets: []
+
+ingress:
+  admin:
+    # -- Ingress annotations
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Enable ingress resource for Admin UI
+    enabled: false
+
+    # -- Host for the Admin UI
+    hostName: admin.openvpn.local
+
+    # -- set ingressClassName here, or leave it unset
+    ingressClassName:
+
+    tls:
+      # -- Enable TLS configuration for the hostname defined at ingress.admin.hostname parameter
+      enabled: true
+      secretName: admin.openvpn-tls
+
+  ui:
+    # -- Ingress annotations
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Enable ingress resource for Client UI
+    enabled: false
+
+    # -- Host for the Client UI
+    hostName: client.openvpn.local
+
+    # -- Set ingressClassName here, or leave it unset
+    ingressClassName:
+
+    tls:
+      # -- Enable TLS configuration for the hostname defined at ingress.ui.hostname parameter
+      enabled: true
+      secretName: client.openvpn-tls
+
+openvpn:
+  admin:
+    # -- Password for the initial super_user
+    password: passw0rd
+    # -- Username for the initial super_user. Cannot be `admin`
+    user: altmin
+
+  # -- Config settings to apply to the openvpn-as server
+  config:
+    # host.name: vpn.example.com
+    vpn.client.routing.reroute_dns: "false"
+    vpn.client.routing.reroute_gw: "false"
+
+  ports:
+    # -- Admin UI port
+    admin: 943
+    # -- VPN TCP port
+    tcp: 9443
+    # -- VPN UDP port
+    udp: 1194
+    # -- Client UI port
+    ui: 944
+
+  timezone: Etc/UTC
+
+  # -- (list) Additional users to create when non-existent `[{"user":"someuser","password":"somepassword"}]`
+  users:
+    # - user: someuser
+    #   password: somepassword
+
+nameOverride: ""
+
+# -- Node labels for pod assignment
+nodeSelector: {}
+
+persistence:
+  # -- PVC Access Mode for volume
+  accessMode: "ReadWriteOnce"
+
+  # -- Annotations for the PVC
+  annotations: {}
+
+  # -- Indicate another subpath for backup storage
+  backupSubpath: backup
+
+  # -- Enable persistence using PVC
+  enabled: true
+
+  # -- used when PVC already created before install
+  existingClaimName:
+
+  # -- Indicate another subpath for licenses storage
+  licensesSubpath: licenses
+
+  # -- PVC Storage Request for volume
+  size: "8Gi"
+
+  # -- PVC Storage Class for volume
+  storageClass:
+
+# -- Map of annotations to add to the pods
+podAnnotations: {}
+
+podSecurityContext:
+  # -- Group ID for the pod
+  fsGroup: 1000
+
+replicaCount: 1
+
+# -- CPU/Memory resource requests/limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Security Context
+securityContext:
+  capabilities:
+    add: ["NET_ADMIN"]
+
+service:
+  # -- Kubernetes Service type for VPN, generally this is "LoadBalancer"
+  type: ClusterIP
+  tcp:
+    enabled: true
+  udp:
+    enabled: true
+  admin:
+    # -- Kubernetes Service type for Admin UI
+    type: ClusterIP
+  ui:
+    # -- Kubernetes Service type for Client UI
+    type: ClusterIP
+
+serviceAccount:
+  # -- Create ServiceAccount
+  create: true
+  annotations: {}
+  name: ""
+
+# -- Toleration labels for pod assignment
+tolerations: []
