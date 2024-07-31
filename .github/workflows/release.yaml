@@ -1,0 +1,37 @@
+name: Release Charts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Use authorized token so we can write back tags, etc.
+          token: ${{ secrets.PAT_GITHUB_ACTIONS || secrets.GITHUB_TOKEN || secrets.CR_TOKEN }}
+
+      - env:
+          RELEASE_ACTOR_NAME_FROM_REPO: "${{ vars.RELEASE_ACTOR_NAME }}"
+          RELEASE_ACTOR_EMAIL_FROM_REPO: "${{ vars.RELEASE_ACTOR_EMAIL }}"
+        name: Configure Git
+        run: |
+          RELEASE_ACTOR_NAME="${RELEASE_ACTOR_NAME_FROM_REPO:-$GITHUB_ACTOR}"
+          RELEASE_ACTOR_EMAIL="${RELEASE_ACTOR_EMAIL_FROM_REPO:-$GITHUB_ACTOR@users.noreply.github.com}"
+          git config user.name "$RELEASE_ACTOR_NAME"
+          git config user.email "$RELEASE_ACTOR_EMAIL"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.3
+
+      - env:
+          CR_GENERATE_RELEASE_NOTES: true
+          CR_SKIP_EXISTING: true
+          CR_TOKEN: "${{ secrets.CR_TOKEN || secrets.GITHUB_TOKEN || secrets.PAT_GITHUB_ACTIONS }}"
+        name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0

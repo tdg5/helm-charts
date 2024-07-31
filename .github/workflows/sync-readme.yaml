@@ -1,0 +1,43 @@
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'README.md'
+permissions: {}
+jobs:
+  build:
+    permissions:
+      # Write permission needed for git push.
+      contents: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+
+      - name: Copy README.md from main
+        run: |
+          cp -f README.md ${{ runner.temp }}/README.md
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - env:
+          AUTOMATION_ACTOR_NAME_FROM_REPO: "${{ vars.AUTOMATION_ACTOR_NAME }}"
+          AUTOMATION_ACTOR_EMAIL_FROM_REPO: "${{ vars.AUTOMATION_ACTOR_EMAIL }}"
+        name: Sync README.md
+        run: |
+          AUTOMATION_ACTOR_NAME="${AUTOMATION_ACTOR_NAME_FROM_REPO:-$GITHUB_ACTOR}"
+          AUTOMATION_ACTOR_EMAIL="${AUTOMATION_ACTOR_EMAIL_FROM_REPO:-$GITHUB_ACTOR@users.noreply.github.com}"
+          git config user.name "$AUTOMATION_ACTOR_NAME"
+          git config user.email "$AUTOMATION_ACTOR_EMAIL"
+
+          cp -f ${{ runner.temp }}/README.md .
+          if ! `git diff --exit-code -s`; then
+            git add README.md
+            git commit --signoff -m "Sync README from main"
+            git push
+          fi

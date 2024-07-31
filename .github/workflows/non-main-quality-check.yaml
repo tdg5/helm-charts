@@ -1,0 +1,73 @@
+name: Quality Checks
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.3
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requirements
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Check requirements are up to date
+        run: |
+          source venv/bin/activate
+
+          pip install .
+          pip uninstall -y helm-charts-dev
+          pip freeze > requirements.txt
+
+          if ! `git diff --exit-code -s`; then
+            echo "Files were changed by 'pip freeze'! Please run 'pip freeze' and commit changes."
+            git diff
+            exit 1
+          fi
+
+      - name: Check style and quality
+        run: |
+          source venv/bin/activate
+
+          make style
+
+          if ! `git diff --exit-code -s`; then
+            echo "Files were changed by 'make style'! Please run 'make style' and commit changes."
+            git diff
+            exit 1
+          fi
+
+          make quality
+
+      - name: Run python tests
+        run: |
+          source venv/bin/activate
+
+          make test
+
+      - name: Check if docs are updated
+        run: |
+          make docs
+
+          if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+            echo "Documentation not up to date." >&2
+            echo "Please run 'make docs' from the repository root and commit changes!" >&2
+            git diff
+            exit 1
+          fi
+
+          echo "Documentation is up to date." >&2
