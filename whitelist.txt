@@ -1,4 +1,13 @@
+adhoc
 conftest
 globals
 joinpath
+liveness
 normpath
+openvpn
+renderer
+tcp
+tolerations
+tz
+udp
+ui

@@ -10,9 +10,9 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "openvpn-as.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "openvpn-as.full-name" -}}
+{{- if .Values.fullNameOverride }}
+{{- .Values.fullNameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
@@ -35,27 +35,25 @@ Common labels
 */}}
 {{- define "openvpn-as.labels" -}}
 helm.sh/chart: {{ include "openvpn-as.chart" . }}
-{{ include "openvpn-as.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+{{ include "openvpn-as.selector-labels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "openvpn-as.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "openvpn-as.name" . }}
+{{- define "openvpn-as.selector-labels" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: {{ include "openvpn-as.name" . }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "openvpn-as.serviceAccountName" -}}
+{{- define "openvpn-as.service-account-name" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "openvpn-as.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "openvpn-as.full-name" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

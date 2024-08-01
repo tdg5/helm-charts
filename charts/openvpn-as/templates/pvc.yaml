@@ -8,7 +8,7 @@ metadata:
 {{- end }}
   labels:
     {{- include "openvpn-as.labels" . | nindent 4 }}
-  name: {{ include "openvpn-as.fullname" . }}-state
+  name: {{ include "openvpn-as.full-name" . }}-state
 spec:
   accessModes:
   - {{ .Values.persistence.accessMode | quote }}

@@ -3,10 +3,13 @@ from dataclasses import dataclass, field
 from os import path
 from pathlib import Path
 from typing import Dict, List, Optional
+from uuid import uuid4
 
 import pytest
 import yaml
 from pytest_helm_templates import HelmRunner
+
+from tests.test_helpers.helper_renderer import HelperRenderer
 
 
 @dataclass
@@ -28,8 +31,12 @@ def charts_path() -> str:
     return path.normpath(str(_charts_path.absolute()))
 
 
-def chart_path(chart_name: str) -> str:
-    return f"{charts_path()}/{chart_name}"
+def chart_path(
+    chart_name: str,
+    charts_path_override: Optional[str] = None,
+) -> str:
+    _charts_path = charts_path_override or charts_path()
+    return f"{_charts_path}/{chart_name}"
 
 
 def get_chart_dependencies(chart_yaml: Dict) -> ChartDependencies:
@@ -49,24 +56,36 @@ def get_chart_dependencies(chart_yaml: Dict) -> ChartDependencies:
     }
 
 
-def get_chart_yaml(chart_name: str) -> Dict:
-    chart_yaml_path = f"{chart_path(chart_name)}/Chart.yaml"
+def get_chart_yaml(
+    chart_name: str,
+    charts_path_override: Optional[str] = None,
+) -> Dict:
+    _chart_path = chart_path(chart_name, charts_path_override)
+    chart_yaml_path = f"{_chart_path}/Chart.yaml"
     with open(chart_yaml_path, encoding="utf-8", mode="r") as file:
         chart_yaml = yaml.safe_load(file)
     assert isinstance(chart_yaml, Dict)
     return chart_yaml
 
 
-def get_chart_values(chart_name: str) -> Dict:
-    chart_values_path = f"{chart_path(chart_name)}/values.yaml"
+def get_chart_values(
+    chart_name: str,
+    charts_path_override: Optional[str] = None,
+) -> Dict:
+    _chart_path = chart_path(chart_name, charts_path_override)
+    chart_values_path = f"{_chart_path}/values.yaml"
     with open(chart_values_path, encoding="utf-8", mode="r") as file:
         chart_values = yaml.safe_load(file)
     assert isinstance(chart_values, Dict)
     return chart_values
 
 
-def get_chart_values_schema(chart_name: str) -> Dict:
-    chart_values_schema_path = f"{chart_path(chart_name)}/values.schema.json"
+def get_chart_values_schema(
+    chart_name: str,
+    charts_path_override: Optional[str] = None,
+) -> Dict:
+    _chart_path = chart_path(chart_name, charts_path_override)
+    chart_values_schema_path = f"{_chart_path}/values.schema.json"
     with open(chart_values_schema_path, encoding="utf-8", mode="r") as file:
         chart_values_schema = json.loads(file.read())
     assert isinstance(chart_values_schema, Dict)
@@ -76,6 +95,7 @@ def get_chart_values_schema(chart_name: str) -> Dict:
 def make_chart_fixtures(
     chart_dir_name: str,
     conftest_globals: Dict,
+    charts_path_override: Optional[str] = None,
 ) -> None:
     @pytest.fixture(scope="package")
     def app_version(chart_yaml: Dict) -> str:
@@ -109,19 +129,19 @@ def make_chart_fixtures(
 
     @pytest.fixture(scope="package")
     def chart_yaml() -> Dict:
-        return get_chart_yaml(chart_dir_name)
+        return get_chart_yaml(chart_dir_name, charts_path_override)
 
     conftest_globals["chart_yaml"] = chart_yaml
 
     @pytest.fixture(scope="package")
     def chart_values() -> Dict:
-        return get_chart_values(chart_dir_name)
+        return get_chart_values(chart_dir_name, charts_path_override)
 
     conftest_globals["chart_values"] = chart_values
 
     @pytest.fixture(scope="package")
     def chart_values_schema() -> Dict:
-        return get_chart_values_schema(chart_dir_name)
+        return get_chart_values_schema(chart_dir_name, charts_path_override)
 
     conftest_globals["chart_values_schema"] = chart_values_schema
 
@@ -131,6 +151,22 @@ def make_chart_fixtures(
 
     conftest_globals["chart_computed_values"] = chart_computed_values
 
+    @pytest.fixture(scope="package")
+    def helper_renderer(chart_name: str, helm_runner: HelmRunner) -> HelperRenderer:
+        return HelperRenderer(
+            chart_name=chart_name,
+            helm_runner=helm_runner,
+        )
 
-def make_helm_runner() -> HelmRunner:
-    return HelmRunner(cwd=charts_path())
+    conftest_globals["helper_renderer"] = helper_renderer
+
+
+def make_helm_runner(
+    charts_path_override: Optional[str] = None,
+) -> HelmRunner:
+    _charts_path = charts_path_override or charts_path()
+    return HelmRunner(cwd=_charts_path)
+
+
+def random_string() -> str:
+    return str(uuid4())
