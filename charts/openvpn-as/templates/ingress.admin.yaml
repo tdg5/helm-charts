@@ -17,20 +17,20 @@ spec:
   ingressClassName: {{ .Values.ingress.admin.ingressClassName }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.admin.hostName | quote }}
-      http:
-        paths:
-        - backend:
-            service:
-              name: {{ $fullName }}-admin
-              port:
-                number: {{ .Values.openvpn.ports.admin }}
-          path: "/"
-          pathType: Prefix
+  - host: {{ .Values.ingress.admin.hostName | quote }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ $fullName }}-admin
+            port:
+              number: {{ .Values.openvpn.ports.admin }}
+        path: "/"
+        pathType: Prefix
   {{- if .Values.ingress.admin.tls.enabled }}
   tls:
-    - hosts:
-        - {{ .Values.ingress.admin.hostName | quote }}
-      secretName: {{ .Values.ingress.admin.tls.secretName }}
+  - hosts:
+    - {{ .Values.ingress.admin.hostName | quote }}
+    secretName: {{ .Values.ingress.admin.tls.secretName }}
   {{- end }}
 {{- end }}

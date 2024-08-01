@@ -1,57 +1,58 @@
 # openvpn-as
 
-## Credit
-
-This helm chart is based on
-[stenic/helm-charts](https://github.com/stenic/helm-charts/tree/master/charts/openvpn-as).
-It was forked out of an abundance of caution motivated by baseless paranoia.
-
-## TL;DR
+## Quick Install
 
 ```bash
 helm repo add tdg5 https://tdg5.github.io/helm-charts/
-helm install my-release --set "service.type=LoadBalancer" tdg5/openvpn-as
+helm install openvpn-as-release --set "service.type=LoadBalancer" tdg5/openvpn-as
 ```
 
 ## Introduction
 
-This chart installs `openvpn-as` on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+This chart installs `openvpn-as` on a
+[Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh)
+package manager.
 
 [![openvpn-as](https://raw.githubusercontent.com/tdg5/helm-charts/main/charts/openvpn-as/openvpn-as.png)](https://openvpn.net/index.php/access-server/overview.html)
 
 ## Prerequisites
 
-- Kubernetes 1.12+
+- Kubernetes 1.22+
 - Helm 3.0+
-- LoadBalancer to expose the vpn service
-- PV provisioner support in the underlying infrastructure
+- Support for LoadBalancer resources to expose openvpn-as
+  services
+- Support for PersistentVolumes for persistent openvpn-as
+  data
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart with the default configuration and the release name
+`openvpn-as-release`:
 
 ```bash
 helm repo add tdg5 https://tdg5.github.io/helm-charts/
-helm install my-release --set "service.type=LoadBalancer" tdg5/openvpn-as
+helm install openvpn-as-release --set "service.type=LoadBalancer" tdg5/openvpn-as
 ```
 
-These commands deploy openvpn-as on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
+See the [Configuration](#configuration) section for more information on
+customizing/configuring your installation.
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release` deployment:
+To remove all the Kubernetes components associated with the
+`openvpn-as` chart and delete the release, run the following
+command:
 
 ```bash
-helm delete my-release
+helm delete openvpn-as-release
 ```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
 
 ## Configuration
 
-The following tables list the configurable parameters of the openvpn-as chart and their default values.
+The following table enumerates the configurable parameters of the
+openvpn-as chart and any default values that are defined.
+
+## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -107,10 +108,17 @@ The following tables list the configurable parameters of the openvpn-as chart an
 | serviceAccount.name | string | `""` |  |
 | tolerations | list | `[]` | Toleration labels for pod assignment |
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
-
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+A YAML file that specifies the values for the parameters can be provided while
+installing the chart like so:
 
 ```bash
-helm install my-release -f values.yaml tdg5/openvpn-as
+helm install openvpn-as-release -f values.yaml tdg5/openvpn-as
 ```
+
+Alternatively, each parameter can be specified using a `--set
+key=value` argument to `helm install`.
+
+## Credit
+
+This helm chart is originally based on
+[stenic/helm-charts](https://github.com/stenic/helm-charts/tree/master/charts/openvpn-as).

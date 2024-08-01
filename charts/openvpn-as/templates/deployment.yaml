@@ -14,8 +14,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configure: |
-          {{ include (print $.Template.BasePath "/secret-configure.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,15 +26,6 @@ spec:
       {{- end }}
       containers:
       - env:
-        - name: PGID
-          value: "1000"
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.name
-        - name: PUID
-          value: "1000"
         - name: TZ
           value: {{quote .Values.openvpn.timezone }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -46,15 +35,15 @@ spec:
         - containerPort: {{ .Values.openvpn.ports.admin }}
           name: admin
           protocol: TCP
-        - containerPort: {{ .Values.openvpn.ports.ui }}
-          name: ui
-          protocol: TCP
         - containerPort: {{ .Values.openvpn.ports.tcp }}
           name: vpn-tcp
           protocol: TCP
         - containerPort: {{ .Values.openvpn.ports.udp }}
           name: vpn-udp
           protocol: UDP
+        - containerPort: {{ .Values.openvpn.ports.ui }}
+          name: ui
+          protocol: TCP
         livenessProbe:
           exec:
             command: ["/usr/local/openvpn_as/scripts/sacli", "Status"]
@@ -65,16 +54,10 @@ spec:
           tcpSocket:
             port: {{ .Values.openvpn.ports.admin }}
         resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+          {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- toYaml .Values.securityContext | nindent 10 }}
         volumeMounts:
-        - mountPath: /etc/cont-init.d/25-restore-backup
-          name: init
-          subPath: 25-restore-backup
-        - mountPath: /backup
-          name: persistence
-          subPath: {{ .Values.persistence.backupSubpath }}
         - mountPath: /usr/local/openvpn_as/etc/licenses/
           name: persistence
           subPath: {{ .Values.persistence.licensesSubpath }}
@@ -96,14 +79,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-      - name: configure
-        secret:
-          defaultMode: 0777
-          secretName: {{ include "openvpn-as.fullname" . }}-configure
-      - configMap:
-          defaultMode: 0777
-          name: {{ include "openvpn-as.fullname" . }}
-        name: init
       - name: persistence
         persistentVolumeClaim:
           {{- if .Values.persistence.existingClaimName }}
