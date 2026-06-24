@@ -67,6 +67,7 @@ generic-api-service chart and any default values that are defined.
 | namespace | object | -- | Various configuration related to the namespace that resources should be deployed to. |
 | namespace.create | bool | `false` | Flag indicating whether or not a namespace resource should be created. |
 | namespace.name | string | `""` | The name that should be given to the namespace and used as a namespace for other resources. When omitted, resources are not assigned an explicit namespace. |
+| persistentVolumeClaims | object | -- | An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of PersistentVolumeClaim configuration. Use for stateful workloads that need a persistent volume; mount the resulting claim via pod.volumes + container.volumeMounts. |
 | pod | object | -- | Various configuration for the application deployment pod. |
 | pod.affinity | object | `{}` | Affinity rules that should be applied to the pod to customize scheduling. |
 | pod.annotations | object | `{}` | Annotations that should be added to the pod. |
@@ -94,6 +95,7 @@ generic-api-service chart and any default values that are defined.
 | serviceAccount.create | bool | `true` | Flag indicating whether or not a service account object should be created. |
 | serviceAccount.labels | object | `{}` | A mapping of arbitrary labels to apply to the service account. |
 | serviceAccount.name | string | `""` | Name that should be given to the service account.  If not set and create is true, a name is genered from the full-name template. |
+| strategy | object | -- | The deployment update strategy, passed through verbatim (e.g. a RollingUpdate config, or {type: Recreate}). Omitted when empty, leaving the Kubernetes default (RollingUpdate). |
 
 A YAML file that specifies the values for the parameters should be provided
 while installing the chart.
