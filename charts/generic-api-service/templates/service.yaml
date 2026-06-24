@@ -1,0 +1,21 @@
+{{- if .Values.service.create -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "generic-api-service.labels" . | nindent 4 }}
+  name: {{ include "generic-api-service.service-name" . }}
+spec:
+  {{- with .Values.ports }}
+  ports:
+  {{- range . }}
+  - name: {{ .name }}
+    port: {{ .servicePort }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .name }}
+  {{- end }}
+  {{- end }}
+  selector:
+    {{- include "generic-api-service.selector-labels" . | nindent 4 }}
+  type: {{ .Values.service.type }}
+{{- end }}
