@@ -1,0 +1,7 @@
+{{- range $id, $pvc := .Values.persistentVolumeClaims -}}
+{{- $claim := include "generic-api-service.persistent-volume-claim" (list $ $id $pvc) -}}
+{{- if trim $claim }}
+{{ $claim }}
+---
+{{- end }}
+{{- end -}}

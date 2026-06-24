@@ -5,4 +5,4 @@ description: A Helm chart for deploying generic API services to Kubernetes.
 icon: https://helm.sh/img/helm.svg
 name: generic-api-service
 type: application
-version: 0.1.1
+version: 0.1.2

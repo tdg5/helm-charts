@@ -290,11 +290,45 @@ ports:
     # -- The port that the service should publish.
     servicePort: 80
 
+# -- An optional map where each key is an arbitrary identifier (to facilitate
+# overriding) and each value is an object of PersistentVolumeClaim
+# configuration. Use for stateful workloads that need a persistent volume; mount
+# the resulting claim via pod.volumes + container.volumeMounts.
+# @default -- --
+persistentVolumeClaims: {}
+  # snapshots:
+  #
+  #   # -- Flag indicating whether or not the PersistentVolumeClaim should be created.
+  #   create: false
+  #
+  #   # -- A mapping of arbitrary metadata to associate with the PVC.
+  #   annotations: {}
+  #
+  #   # -- The name that should be given to the PVC. When omitted, it defaults to
+  #   # <full-name>-<identifier> (so a claimName referencing it stays stable).
+  #   name: ""
+  #
+  #   # -- The PersistentVolumeClaim spec, passed through verbatim (accessModes,
+  #   # storageClassName, resources.requests.storage, etc.).
+  #   spec:
+  #     accessModes:
+  #       - ReadWriteOnce
+  #     storageClassName: standard
+  #     resources:
+  #       requests:
+  #         storage: 5Gi
+
 # -- The number of pod replicas that should be run by the deployment.
 replicaCount: 1
 
 # -- The number of historical deployment revisions to retain.
 revisionHistoryLimit: 5
+
+# -- The deployment update strategy, passed through verbatim (e.g. a
+# RollingUpdate config, or {type: Recreate}). Omitted when empty, leaving the
+# Kubernetes default (RollingUpdate).
+# @default -- --
+strategy: {}
 
 # -- Various configuration for the service object.
 # @default -- --

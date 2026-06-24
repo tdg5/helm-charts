@@ -10,6 +10,7 @@ joinpath
 keystore
 keystores
 kube
+kubernetes
 liveness
 normpath
 passthrough

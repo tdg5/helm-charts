@@ -133,6 +133,10 @@
       },
       "type": "object"
     },
+    "persistentVolumeClaims": {
+      "description": "An optional map where each key is an arbitrary identifier and each value is an object of PersistentVolumeClaim configuration.",
+      "type": "object"
+    },
     "pod": {
       "description": "Various configuration related to the application deployment pod.",
       "properties": {
@@ -254,6 +258,10 @@
           "type": "string"
         }
       },
+      "type": "object"
+    },
+    "strategy": {
+      "description": "The deployment update strategy, passed through verbatim (e.g. a RollingUpdate config, or {type: Recreate}).",
       "type": "object"
     }
   },

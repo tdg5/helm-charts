@@ -53,6 +53,8 @@ def test_static_values_and_defaults(
     spec = subject["spec"]
     assert spec["replicas"] == chart_values["replicaCount"]
     assert spec["revisionHistoryLimit"] == 5
+    # strategy is omitted by default, leaving the Kubernetes default.
+    assert "strategy" not in spec
 
     default_selector_labels_yaml = helper_renderer.render(
         "selector-labels",
@@ -154,6 +156,19 @@ def test_revision_history_limit_can_be_customized_by_setting_appropriate_value(
     )
 
     assert subject["spec"]["revisionHistoryLimit"] == revision_history_limit_count
+
+
+def test_strategy_is_omitted_by_default(helm_runner: HelmRunner) -> None:
+    subject = render_subject(helm_runner=helm_runner)
+    assert "strategy" not in subject["spec"]
+
+
+def test_strategy_can_be_set_with_the_strategy_value(helm_runner: HelmRunner) -> None:
+    subject = render_subject(
+        helm_runner=helm_runner,
+        values={"strategy": {"type": "Recreate"}},
+    )
+    assert subject["spec"]["strategy"] == {"type": "Recreate"}
 
 
 @pytest.mark.parametrize("expected_annotations", [None, EXAMPLE_MAPPING])
