@@ -1,0 +1,319 @@
+# -- The name of the application or service being deployed.
+appName: ""
+
+# -- The version of the application or service being deployed. When not
+# provided, container.image.tag will be used instead.
+appVersion: ""
+
+# -- An optional map where each key is an arbitrary identifier (to facilitate
+# overriding) and each value is an object of Gateway API BackendTLSPolicy
+# configuration. Re-encrypts Gateway-to-backend traffic over TLS (the Gateway
+# API analog of the nginx Ingress backend-protocol: HTTPS annotation).
+# @default -- --
+backendTLSPolicies: {}
+  # default:
+  #
+  #   # -- A mapping of arbitrary metadata to associate with the BackendTLSPolicy.
+  #   annotations: {}
+  #
+  #   # -- Flag indicating whether or not the BackendTLSPolicy should be created.
+  #   create: false
+  #
+  #   # -- The name that should be given to the BackendTLSPolicy resource. When
+  #   # omitted, the full-name template is used.
+  #   name: ""
+  #
+  #   # -- A map where each key is an arbitrary identifier (to facilitate
+  #   # overriding) and each value is a reference to the target the policy applies
+  #   # to. The name defaults to this chart's service and kind defaults to Service.
+  #   targetRefs:
+  #     service:
+  #       group: ""
+  #       kind: Service
+  #       name: ""
+  #       # -- The name of the Service port the policy applies to.
+  #       sectionName: https
+  #
+  #   # -- The BackendTLSPolicy validation spec, passed through verbatim. Must set
+  #   # a hostname and either wellKnownCACertificates or caCertificateRefs.
+  #   validation:
+  #     wellKnownCACertificates: System
+  #     hostname: example.private.example.com
+
+# -- An optional map where each key is an arbitrary identifier (to facilitate
+# overriding) and each value is an object of Envoy Gateway BackendTrafficPolicy
+# configuration. Applies traffic settings (e.g. request timeouts) to routes or
+# services (the Gateway API analog of nginx proxy-read-timeout and friends).
+# @default -- --
+backendTrafficPolicies: {}
+  # default:
+  #
+  #   # -- A mapping of arbitrary metadata to associate with the policy.
+  #   annotations: {}
+  #
+  #   # -- Flag indicating whether or not the BackendTrafficPolicy should be created.
+  #   create: false
+  #
+  #   # -- The name that should be given to the BackendTrafficPolicy resource. When
+  #   # omitted, the full-name template is used.
+  #   name: ""
+  #
+  #   # -- A map where each key is an arbitrary identifier (to facilitate
+  #   # overriding) and each value is a reference to the target the policy applies
+  #   # to. The name defaults to this chart's full-name and kind defaults to
+  #   # HTTPRoute.
+  #   targetRefs:
+  #     route:
+  #       group: gateway.networking.k8s.io
+  #       kind: HTTPRoute
+  #       name: ""
+  #
+  #   # -- The remainder of the BackendTrafficPolicy spec (timeout, retry,
+  #   # rateLimit, etc.), passed through verbatim.
+  #   spec:
+  #     timeout:
+  #       http:
+  #         requestTimeout: 300s
+
+# -- Various configuration related to the deployed container.
+# @default -- --
+container:
+
+  # -- An optional mapping where each key is an arbitrary identifier (to
+  # facilitate overriding) and each value is an EnvVar spec.
+  env: {}
+
+  # -- Various configuration related to the container image.
+  # @default -- --
+  image:
+
+    # -- The pull policy to use for the image.
+    pullPolicy: IfNotPresent
+
+    # -- The repository containing the image that should be deployed.
+    repository: ""
+
+    # -- The image tag that should be used by the deployment.
+    tag: ""
+
+  # -- Liveness probe configuration for the container.
+  # @default -- --
+  livenessProbe:
+
+    # -- A string key that identifies the type of liveness probe and a
+    # mapping describing the liveness probe.
+    # @default -- --
+    httpGet:
+
+      # -- The path that should be accessed when using an HTTP GET liveness
+      # probe.
+      path: /livez
+
+      # -- The name of the port that should be accessed when using an HTTP
+      # GET liveness probe.
+      port: http
+
+  # -- Readiness probe configuration for the container.
+  # @default -- --
+  readinessProbe:
+
+    # -- A string key that identifies the type of readiness probe and a mapping
+    # describing the readiness probe.
+    # @default -- --
+    httpGet:
+
+      # -- The path that should be accessed when using an HTTP GET readiness
+      # probe.
+      path: /readyz
+
+      # -- The name of the port that should be accessed when using an HTTP GET
+      # readiness probe.
+      port: http
+
+  # -- The resources that the container requests and is limited to.
+  resources: {}
+
+  # -- The security context that should be applied to the container.
+  securityContext: {}
+
+  # -- Startup probe configuration for the container.
+  # @default -- --
+  startupProbe: {}
+
+  # -- Pod volumes to mount into the container's filesystem given in the form
+  # of an object where each key is an arbitrary identifier (to facilitate
+  # overridding) and each value is an object of volume mount configuration.
+  volumeMounts: {}
+
+# -- Value to use for generating full object names instead of the standard
+# template based logic.
+fullNameOverride: ""
+
+# -- An optional map where each key is an arbitrary identifier (to facilitate
+# overriding) and each value is an object of Gateway API HTTPRoute
+# configuration. HTTPRoutes are the Gateway API mechanism for routing traffic
+# from a Gateway to this chart's service.
+# @default -- --
+httpRoutes: {}
+  # arbitrary-identifier:
+  #
+  #   # -- A mapping of arbitrary metadata to associate with the HTTPRoute resource.
+  #   annotations: {}
+  #
+  #   # -- Flag indicating whether or not the HTTPRoute resource should be created.
+  #   create: false
+  #
+  #   # -- An optional map where each key is an arbitrary identifier (to facilitate
+  #   # overriding) and each value is a host name that the HTTPRoute should match.
+  #   hostnames:
+  #     example_dot_com: example.com
+  #
+  #   # -- The name that should be given to the HTTPRoute resource. When omitted,
+  #   # the full-name template is used.
+  #   name: ""
+  #
+  #   # -- A map where each key is an arbitrary identifier (to facilitate
+  #   # overriding) and each value is a reference to a Gateway (and optionally one
+  #   # of its listeners) that the HTTPRoute should attach to.
+  #   parentRefs:
+  #     shared_gateway:
+  #       name: shared-gateway
+  #       # -- The namespace of the referenced Gateway. Defaults to the
+  #       # HTTPRoute's namespace when omitted.
+  #       namespace: gateway-system
+  #       # -- The name of a specific listener on the Gateway to attach to.
+  #       sectionName: https
+  #       # -- The port of a specific listener on the Gateway to attach to.
+  #       port: 443
+  #
+  #   # -- A map where each key is an arbitrary identifier (to facilitate
+  #   # overriding) and each value is an HTTPRoute rule. Each rule routes matching
+  #   # requests to one or more backends.
+  #   rules:
+  #     root:
+  #       # -- A map where each key is an arbitrary identifier (to facilitate
+  #       # overriding) and each value is a backend to forward matching traffic to.
+  #       # The service name defaults to this chart's service.
+  #       backendRefs:
+  #         http:
+  #           # -- The name of a port defined in .Values.ports. The port is
+  #           # resolved to its servicePort number.
+  #           portName: http
+  #           # -- An optional name of the backend service. Defaults to this
+  #           # chart's service when omitted.
+  #           name: ""
+  #           # -- An optional relative weight for this backend.
+  #           weight: 1
+  #       # -- An optional map of request matches. When omitted, the rule matches
+  #       # all requests.
+  #       matches:
+  #         root:
+  #           path:
+  #             type: PathPrefix
+  #             value: /
+  #           # -- An optional HTTP method to match.
+  #           method: GET
+
+# -- Various configuration related to the namespace that resources should be deployed to.
+# @default -- --
+namespace:
+
+  # -- Flag indicating whether or not a namespace resource should be created.
+  create: false
+
+  # -- The name that should be given to the namespace and used as a namespace for other resources. When
+  # omitted, resources are not assigned an explicit namespace.
+  name: ""
+
+# -- Various configuration for the application deployment pod.
+# @default -- --
+pod:
+
+  # -- Affinity rules that should be applied to the pod to customize scheduling.
+  affinity: {}
+
+  # -- Annotations that should be added to the pod.
+  annotations: {}
+
+  # -- An optional mapping where each key is an arbitrary identifier (to faciliate overriding) and each value
+  # is a reference to a secret in the same namespace to use for pulling any of the images used by the PodSpec.
+  imagePullSecrets: {}
+
+  # -- Labels that should be added to the pod.
+  labels: {}
+
+  # -- An optional selector which must be true for the pod to fit on a node.
+  nodeSelector: {}
+
+  # -- The security context that should be applied to the pod.
+  securityContext: {}
+
+  # -- An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value
+  # is an object describing criteria for matching taints that the pod should tolerate.
+  tolerations: {}
+
+  # -- An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value
+  # is an object describing a volume that can be mounted by containers belonging to the pod.
+  volumes: {}
+
+# -- A list of onfigurations for the ports that the container/service should expose.
+# @default -- --
+ports:
+
+  # -- An arbitrary alias for the port to facilitate overriding.
+  # @default -- --
+  http:
+
+    # -- The port that the container should publish.
+    containerPort: 80
+
+    # -- The name that should be used to reference the container port and
+    # service port.
+    name: http
+
+    # -- The protocol that is handled by the port.
+    protocol: TCP
+
+    # -- The port that the service should publish.
+    servicePort: 80
+
+# -- The number of pod replicas that should be run by the deployment.
+replicaCount: 1
+
+# -- The number of historical deployment revisions to retain.
+revisionHistoryLimit: 5
+
+# -- Various configuration for the service object.
+# @default -- --
+service:
+
+  # -- Flag indicating whether or not a service resource should be created.
+  create: true
+
+  # -- The name that should be given to the service.
+  name: ""
+
+  # -- Determines how the service is exposed.
+  type: ClusterIP
+
+# -- Various configuration for the service account object.
+# @default -- --
+serviceAccount:
+
+  # -- A mapping of arbitrary metadata to associate with the service account.
+  annotations: {}
+
+  # -- Flag that indicates whether pods running as this service account should
+  # have an API token automatically mounted.
+  automount: true
+
+  # -- Flag indicating whether or not a service account object should be
+  # created.
+  create: true
+
+  # -- A mapping of arbitrary labels to apply to the service account.
+  labels: {}
+
+  # -- Name that should be given to the service account.  If not set and create is true, a name is genered
+  # from the full-name template.
+  name: ""

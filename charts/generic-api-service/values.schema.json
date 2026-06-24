@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "description": "Default values for generic-api-service. Declare variables to be passed into your templates.",
+  "properties": {
+    "appName": {
+      "description": "The name of the application or service being deployed.",
+      "type": "string"
+    },
+    "appVersion": {
+      "description": "The version of the application or service being deployed. When not provided, container.image.tag will be used instead.",
+      "type": "string"
+    },
+    "backendTLSPolicies": {
+      "description": "An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Gateway API BackendTLSPolicy configuration.",
+      "type": "object"
+    },
+    "backendTrafficPolicies": {
+      "description": "An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Envoy Gateway BackendTrafficPolicy configuration.",
+      "type": "object"
+    },
+    "container": {
+      "description": "Various configuration related to the deployed container.",
+      "properties": {
+        "env": {
+          "description": "An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an EnvVar spec.",
+          "type": "object"
+        },
+        "image": {
+          "description": "Various configuration for the container image.",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "The pull policy to use for the image.",
+              "pattern": "^(Always|IfNotPresent|Never)$",
+              "type": "string"
+            },
+            "repository": {
+              "description": "The repository containing the image that should be deployed.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "The image tag that should be used by the deployment.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "repository",
+            "tag"
+          ],
+          "type": "object"
+        },
+        "livenessProbe": {
+          "description": "Liveness probe configuration for the container.",
+          "patternProperties": {
+            "^httpGet$": {
+              "description": "A string key that identifies the type of liveness probe and a mapping describing the liveness probe.",
+              "properties": {
+                "path": {
+                  "description": "The path that should be accessed when using an HTTP GET liveness probe.",
+                  "type": "string"
+                },
+                "port": {
+                  "description": "The name of the port that should be accessed when using an HTTP GET liveness probe.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "readinessProbe": {
+          "description": "Readiness probe configuration for the container.",
+          "patternProperties": {
+            "^httpGet$": {
+              "description": "A string key that identifies the type of readiness probe and a mapping describing the readiness probe.",
+              "properties": {
+                "path": {
+                  "description": "The path that should be accessed when using an HTTP GET readiness probe.",
+                  "type": "string"
+                },
+                "port": {
+                  "description": "The name of the port that should be accessed when using an HTTP GET readiness probe.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "resources": {
+          "description": "The resources that the container requests and is limited to.",
+          "type": "object"
+        },
+        "securityContext": {
+          "description": "The security context that should be applied to the container.",
+          "type": "object"
+        },
+        "startupProbe": {
+          "description": "Startup probe configuration for the container.",
+          "type": "object"
+        },
+        "volumeMounts": {
+          "description": "Pod volumes to mount into the container's filesystem given in the form of an object where each key is an arbitrary identifier (to facilitate overridding) and each value is an object of volume mount configuration.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "image"
+      ],
+      "type": "object"
+    },
+    "fullNameOverride": {
+      "description": "Value to use for generating full object names instead of the standard template based logic.",
+      "type": "string"
+    },
+    "httpRoutes": {
+      "description": "An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Gateway API HTTPRoute configuration.",
+      "type": "object"
+    },
+    "namespace": {
+      "description": "Various configuration related to the namespace that resources should be deployed to.",
+      "properties": {
+        "create": {
+          "description": "Flag indicating whether or not a namespace resource should be created.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name that should be given to the namespace and used as a namespace for other resources. When omitted, resources are not assigned an explicit namespace.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "pod": {
+      "description": "Various configuration related to the application deployment pod.",
+      "properties": {
+        "affinity": {
+          "description": "Affinity rules that should be applied to the pod to customize scheduling.",
+          "type": "object"
+        },
+        "annotations": {
+          "description": "Annotations that should be added to the pod.",
+          "type": "object"
+        },
+        "imagePullSecrets": {
+          "description": "An optional mapping where each key is an arbitrary identifier (to faciliate overriding) and each value is a reference to a secret in the same namespace to use for pulling any of the images used by the PodSpec.",
+          "type": "object"
+        },
+        "labels": {
+          "description": "Labels that should be added to the pod.",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "description": "An optional selector which must be true for the pod to be scheduled on a node.",
+          "type": "object"
+        },
+        "securityContext": {
+          "description": "The security context that should be applied to the pod.",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing criteria for matching taints that the pod should tolerate.",
+          "type": "object"
+        },
+        "volumes": {
+          "description": "An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing a volume that can be mounted by containers belonging to the pod.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ports": {
+      "description": "Configuration for the ports exposed by the container and the service.",
+      "patternProperties": {
+        "^.*$": {
+          "properties": {
+            "containerPort": {
+              "description": "The port that the container should publish.",
+              "type": "integer"
+            },
+            "name": {
+              "description": "The name that should be used to reference the container port and service port.",
+              "type": "string"
+            },
+            "protocol": {
+              "description": "The protocol that is handled by the port.",
+              "type": "string"
+            },
+            "servicePort": {
+              "description": "The port that the service should publish.",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "containerPort",
+            "name",
+            "protocol",
+            "servicePort"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "replicaCount": {
+      "description": "The number of pod replicas that should be run by the deployment.",
+      "type": "integer"
+    },
+    "revisionHistoryLimit": {
+      "description": "The number of historical deployment revisions to retain.",
+      "type": "integer"
+    },
+    "service": {
+      "description": "Various configuration for the service object.",
+      "properties": {
+        "create": {
+          "description": "Flag indicating whether or not a service resource should be created.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name that should be given to the service.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Determines how the service is exposed.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "serviceAccount": {
+      "description": "Various configuration for the service account object.",
+      "properties": {
+        "annotations": {
+          "description": "A mapping of arbitrary metadata to associate with the service account.",
+          "type": "object"
+        },
+        "automount": {
+          "description": "Flag that indicates whether pods running as this service account should have an API token automatically mounted.",
+          "type": "boolean"
+        },
+        "create": {
+          "description": "Flag indicating whether or not a service account object should be created.",
+          "type": "boolean"
+        },
+        "labels": {
+          "description": "A mapping of arbitrary labels to apply to the service account.",
+          "type": "object"
+        },
+        "name": {
+          "description": "Name that should be given to the service account. If not set and create is true, a name is genered from the fullname template.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": ["appName", "container"],
+  "type": "object"
+}
