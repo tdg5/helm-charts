@@ -6,13 +6,15 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      # Write permission needed for chart-releaser to push tags, create
+      # releases, and publish the index to gh-pages.
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Use authorized token so we can write back tags, etc.
-          token: ${{ secrets.PAT_GITHUB_ACTIONS || secrets.GITHUB_TOKEN || secrets.CR_TOKEN }}
 
       - env:
           RELEASE_ACTOR_NAME_FROM_REPO: "${{ vars.RELEASE_ACTOR_NAME }}"
@@ -32,6 +34,6 @@ jobs:
       - env:
           CR_GENERATE_RELEASE_NOTES: true
           CR_SKIP_EXISTING: true
-          CR_TOKEN: "${{ secrets.CR_TOKEN || secrets.GITHUB_TOKEN || secrets.PAT_GITHUB_ACTIONS }}"
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
