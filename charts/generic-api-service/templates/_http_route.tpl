@@ -23,7 +23,9 @@ metadata:
 spec:
   parentRefs:
   {{- range $parentRefs }}
-  - name: {{ required "A valid .name is required for each parentRef." .name }}
+  - group: {{ .group | default "gateway.networking.k8s.io" }}
+    kind: {{ .kind | default "Gateway" }}
+    name: {{ required "A valid .name is required for each parentRef." .name }}
     {{- with .namespace }}
     namespace: {{ . }}
     {{- end }}
@@ -47,11 +49,11 @@ spec:
     {{- if .backendRefs }}
     backendRefs:
     {{- range .backendRefs }}
-    - name: {{ .name | default $serviceName }}
+    - group: {{ .group | default "" | quote }}
+      kind: {{ .kind | default "Service" }}
+      name: {{ .name | default $serviceName }}
       port: {{ include "generic-api-service.service-port-number" (list $globalScope .portName) }}
-      {{- if hasKey . "weight" }}
-      weight: {{ .weight }}
-      {{- end }}
+      weight: {{ if hasKey . "weight" }}{{ .weight }}{{ else }}1{{ end }}
     {{- end }}
     {{- end }}
     {{- with .matches }}

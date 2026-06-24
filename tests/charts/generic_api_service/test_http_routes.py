@@ -168,7 +168,81 @@ def test_parent_refs_can_be_configured_with_the_parent_refs_value(
     assert full["port"] == 8443
 
     minimal = rendered_by_name["gateway-2-name"]
-    assert minimal == {"name": "gateway-2-name"}
+    # group/kind default to the Gateway API API-server defaults so the rendered
+    # manifest matches the live object (no perpetual ArgoCD drift).
+    assert minimal == {
+        "group": "gateway.networking.k8s.io",
+        "kind": "Gateway",
+        "name": "gateway-2-name",
+    }
+
+
+def test_parent_ref_group_and_kind_default_to_gateway_api_defaults(
+    helm_runner: HelmRunner,
+) -> None:
+    subject = render_subjects(
+        helm_runner=helm_runner,
+        values={
+            "httpRoutes": {
+                "identifier": {"parentRefs": {"gateway": {"name": "gateway-name"}}},
+            },
+        },
+    )[0]
+    parent_ref = subject["spec"]["parentRefs"][0]
+    assert parent_ref["group"] == "gateway.networking.k8s.io"
+    assert parent_ref["kind"] == "Gateway"
+
+
+def test_parent_ref_group_and_kind_can_be_overridden(
+    helm_runner: HelmRunner,
+) -> None:
+    subject = render_subjects(
+        helm_runner=helm_runner,
+        values={
+            "httpRoutes": {
+                "identifier": {
+                    "parentRefs": {
+                        "gateway": {
+                            "name": "gateway-name",
+                            "group": "example.io",
+                            "kind": "Mesh",
+                        },
+                    },
+                },
+            },
+        },
+    )[0]
+    parent_ref = subject["spec"]["parentRefs"][0]
+    assert parent_ref["group"] == "example.io"
+    assert parent_ref["kind"] == "Mesh"
+
+
+def test_backend_ref_group_and_kind_can_be_overridden(
+    helm_runner: HelmRunner,
+) -> None:
+    subject = render_subjects(
+        helm_runner=helm_runner,
+        values={
+            "httpRoutes": {
+                "identifier": {
+                    "rules": {
+                        "rule-id-1": {
+                            "backendRefs": {
+                                "backend": {
+                                    "portName": "http",
+                                    "group": "example.io",
+                                    "kind": "Backend",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    )[0]
+    backend_ref = subject["spec"]["rules"][0]["backendRefs"][0]
+    assert backend_ref["group"] == "example.io"
+    assert backend_ref["kind"] == "Backend"
 
 
 def test_hostnames_can_be_configured_with_the_hostnames_value(
@@ -257,7 +331,11 @@ def test_rules_and_backend_refs_can_be_configured(
 
     default_backend = backend_refs_by_name[expected_service_name]
     assert default_backend["port"] == 80
-    assert "weight" not in default_backend
+    # weight defaults to the Gateway API API-server default of 1 (emitted
+    # explicitly so the rendered manifest matches the live object).
+    assert default_backend["weight"] == 1
+    assert default_backend["group"] == ""
+    assert default_backend["kind"] == "Service"
 
     explicit_backend = backend_refs_by_name[other_service_name]
     assert explicit_backend["port"] == 443

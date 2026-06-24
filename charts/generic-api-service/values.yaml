@@ -178,6 +178,12 @@ httpRoutes: {}
   #   parentRefs:
   #     shared_gateway:
   #       name: shared-gateway
+  #       # -- The API group of the referenced parent. Defaults to
+  #       # gateway.networking.k8s.io (the Gateway API default).
+  #       group: gateway.networking.k8s.io
+  #       # -- The kind of the referenced parent. Defaults to Gateway (the
+  #       # Gateway API default).
+  #       kind: Gateway
   #       # -- The namespace of the referenced Gateway. Defaults to the
   #       # HTTPRoute's namespace when omitted.
   #       namespace: gateway-system
@@ -202,7 +208,14 @@ httpRoutes: {}
   #           # -- An optional name of the backend service. Defaults to this
   #           # chart's service when omitted.
   #           name: ""
-  #           # -- An optional relative weight for this backend.
+  #           # -- The API group of the backend. Defaults to "" (core), the
+  #           # Gateway API default for a Service backend.
+  #           group: ""
+  #           # -- The kind of the backend. Defaults to Service (the Gateway API
+  #           # default).
+  #           kind: Service
+  #           # -- An optional relative weight for this backend. Defaults to 1
+  #           # (the Gateway API default) when omitted.
   #           weight: 1
   #       # -- An optional map of request matches. When omitted, the rule matches
   #       # all requests.
