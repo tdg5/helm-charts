@@ -1,0 +1,14 @@
+{{- if .Values.namespace.create -}}
+{{-
+  $namespaceName := include "generic-api-service.namespace-name" . |
+  required "A valid .Values.namespace.name is required."
+-}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  {{- with .Values.namespace.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  name: {{ $namespaceName }}
+{{- end -}}
