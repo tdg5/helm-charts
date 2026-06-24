@@ -1,0 +1,7 @@
+{{- range .Values.httpRoutes -}}
+{{- $route := include "generic-api-service.http-route" (list $ .) -}}
+{{- if trim $route }}
+{{ $route }}
+---
+{{- end }}
+{{- end -}}
