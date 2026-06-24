@@ -1,0 +1,7 @@
+{{- range .Values.backendTLSPolicies -}}
+{{- $policy := include "generic-api-service.backend-tls-policy" (list $ .) -}}
+{{- if trim $policy }}
+{{ $policy }}
+---
+{{- end }}
+{{- end -}}
