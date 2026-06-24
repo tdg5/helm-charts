@@ -2,7 +2,6 @@ from typing import Any, Dict
 
 from tests.test_helpers import random_string
 
-
 CHART_NAME = "generic-api-service"
 EXAMPLE_APP_NAME = "app-name"
 EXAMPLE_APP_VERSION = "app-version"
