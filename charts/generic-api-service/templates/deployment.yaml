@@ -1,0 +1,120 @@
+{{- $valuesDict := .Values | merge (dict) -}}
+{{-
+  $podValues := $valuesDict |
+    dig "pod" nil |
+    required "A valid .Values.pod is required."
+-}}
+{{-
+  $containerValues := $valuesDict |
+    dig "container" nil |
+    required "A valid .Values.container is required."
+-}}
+{{-
+  $imageValues := $containerValues |
+    dig "image" nil |
+    required "A valid .Values.container.image is required."
+-}}
+{{-
+  $imageRepository := $imageValues |
+    dig "repository" nil |
+    required "A valid .Values.container.image.repository is required."
+-}}
+{{-
+  $imageTag := $imageValues |
+    dig "tag" nil |
+    required "A valid .Values.container.image.tag is required."
+-}}
+{{-
+  $imagePullPolicy := $imageValues |
+    dig "pullPolicy" nil |
+    default "IfNotPresent"
+-}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "generic-api-service.labels" . | nindent 4 }}
+  name: {{ include "generic-api-service.full-name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 5 }}
+  selector:
+    matchLabels:
+      {{- include "generic-api-service.selector-labels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $podValues.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "generic-api-service.labels" . | nindent 8 }}
+        {{- with $podValues.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with $podValues.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: "{{ $imageRepository }}:{{ $imageTag }}"
+        imagePullPolicy: {{ $imagePullPolicy }}
+        {{- with $containerValues.env }}
+        env:
+          {{- values . | toYaml | nindent 10 }}
+        {{- end -}}
+        {{- with $containerValues.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        name: {{ include "generic-api-service.app-name" . }}
+        {{- with .Values.ports }}
+        ports:
+        {{- range . }}
+        - containerPort: {{ .containerPort }}
+          name: {{ .name }}
+          protocol: {{ .protocol }}
+        {{- end }}
+        {{- end }}
+        {{- with $containerValues.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $containerValues.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $containerValues.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $containerValues.startupProbe }}
+        startupProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $containerValues.volumeMounts }}
+        volumeMounts:
+          {{- values . | toYaml | nindent 10 }}
+        {{- end }}
+      {{- with $podValues.imagePullSecrets }}
+      imagePullSecrets:
+        {{- values . | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $podValues.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "generic-api-service.service-account-name" . }}
+      {{- with $podValues.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $podValues.tolerations }}
+      tolerations:
+        {{- values . | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with $podValues.volumes }}
+      volumes:
+        {{- values . | toYaml | nindent 8 }}
+      {{- end }}

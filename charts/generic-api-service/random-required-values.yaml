@@ -1,0 +1,5 @@
+appName: 4f1c9ad2
+container:
+  image:
+    repository: 7b3e0c81
+    tag: e92a5d6f
