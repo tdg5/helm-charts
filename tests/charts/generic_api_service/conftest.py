@@ -3,7 +3,9 @@ from typing import Any, Dict
 import pytest
 from pytest_helm_templates import HelmRunner
 
-from tests.charts.generic_api_service import CHART_NAME
+from tests.charts.generic_api_service import (
+    CHART_NAME,
+)
 from tests.charts.generic_api_service import (
     random_required_values as _random_required_values,
 )

@@ -20,7 +20,7 @@ def test_service_account_resource_can_be_omitted(helm_runner: HelmRunner) -> Non
         values=[random_required_values() | {"serviceAccount": {"create": False}}],
     )
     assert len(resources) > 0
-    assert all([resource.get("kind") != "ServiceAccount" for resource in resources])
+    assert all(resource.get("kind") != "ServiceAccount" for resource in resources)
 
 
 def test_static_values_and_defaults(

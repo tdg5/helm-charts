@@ -22,9 +22,7 @@ def test_backend_traffic_policy_resource_is_omitted_by_default(
         values=[random_required_values()],
     )
     assert len(resources) > 0
-    assert all(
-        [resource.get("kind") != "BackendTrafficPolicy" for resource in resources]
-    )
+    assert all(resource.get("kind") != "BackendTrafficPolicy" for resource in resources)
 
 
 def test_resource_is_omitted_when_create_is_false(helm_runner: HelmRunner) -> None:
@@ -43,9 +41,7 @@ def test_resource_is_omitted_when_create_is_false(helm_runner: HelmRunner) -> No
         values=[values],
     )
     assert len(resources) > 0
-    assert all(
-        [resource.get("kind") != "BackendTrafficPolicy" for resource in resources]
-    )
+    assert all(resource.get("kind") != "BackendTrafficPolicy" for resource in resources)
 
 
 def test_static_values_and_defaults(

@@ -35,7 +35,7 @@ def test_namespace_resource_can_be_omitted(helm_runner: HelmRunner) -> None:
         values=[random_required_values() | {"namespace": {"create": False}}],
     )
     assert len(resources) > 0
-    assert all([resource.get("kind") != "Namespace" for resource in resources])
+    assert all(resource.get("kind") != "Namespace" for resource in resources)
 
 
 def test_name_can_be_configured_with_namespace_name(

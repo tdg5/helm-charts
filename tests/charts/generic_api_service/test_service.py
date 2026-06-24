@@ -78,7 +78,7 @@ def test_service_resource_can_be_omitted(helm_runner: HelmRunner) -> None:
         values=[random_required_values() | {"service": {"create": False}}],
     )
     assert len(resources) > 0
-    assert all([resource.get("kind") != "Service" for resource in resources])
+    assert all(resource.get("kind") != "Service" for resource in resources)
 
 
 def test_ports_can_be_customized_with_ports_value(
