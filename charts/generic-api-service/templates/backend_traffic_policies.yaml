@@ -1,0 +1,7 @@
+{{- range .Values.backendTrafficPolicies -}}
+{{- $policy := include "generic-api-service.backend-traffic-policy" (list $ .) -}}
+{{- if trim $policy }}
+{{ $policy }}
+---
+{{- end }}
+{{- end -}}
