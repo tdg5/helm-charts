@@ -3,6 +3,17 @@ entries:
   generic-api-service:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2026-09-15T18:09:22.394747204Z"
+    description: A Helm chart for deploying generic API services to Kubernetes.
+    digest: bedad0c8268e129cfc56b2348f296cab85271cc76e70b82b5c331f2e1e43b530
+    icon: https://helm.sh/img/helm.svg
+    name: generic-api-service
+    type: application
+    urls:
+    - https://github.com/tdg5/helm-charts/releases/download/generic-api-service-0.1.3/generic-api-service-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2026-06-24T17:23:42.479282692Z"
     description: A Helm chart for deploying generic API services to Kubernetes.
     digest: 69f311738cfebe3de1427372c8893670a63e606b4d2124e1302a0858c66cfb5e
@@ -34,4 +45,4 @@ entries:
     urls:
     - https://github.com/tdg5/helm-charts/releases/download/generic-api-service-0.1.0/generic-api-service-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-24T17:23:42.479291436Z"
+generated: "2026-09-15T18:09:22.394755557Z"
