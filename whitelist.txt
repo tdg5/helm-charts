@@ -1,7 +1,9 @@
 adhoc
 automount
+cmd
 conftest
 dns
+entrypoint
 falsey
 fullmatch
 globals

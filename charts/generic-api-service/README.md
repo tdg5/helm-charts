@@ -45,6 +45,8 @@ generic-api-service chart and any default values that are defined.
 | backendTLSPolicies | object | -- | An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Gateway API BackendTLSPolicy configuration. Re-encrypts Gateway-to-backend traffic over TLS (the Gateway API analog of the nginx Ingress backend-protocol: HTTPS annotation). |
 | backendTrafficPolicies | object | -- | An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Envoy Gateway BackendTrafficPolicy configuration. Applies traffic settings (e.g. request timeouts) to routes or services (the Gateway API analog of nginx proxy-read-timeout and friends). |
 | container | object | -- | Various configuration related to the deployed container. |
+| container.args | list | `[]` | An optional list of arguments passed to the container, overriding the image's CMD. A list rather than the keyed-map pattern used elsewhere in this chart, because argument order is significant and a map would be rendered in key order. Omitted from the container when empty, leaving the image's own CMD in place. |
+| container.command | list | `[]` | An optional list that overrides the image's ENTRYPOINT. A list for the same reason as args above. Omitted from the container when empty, leaving the image's own ENTRYPOINT in place. |
 | container.env | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an EnvVar spec. |
 | container.image | object | -- | Various configuration related to the container image. |
 | container.image.pullPolicy | string | `"IfNotPresent"` | The pull policy to use for the image. |

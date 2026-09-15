@@ -21,6 +21,20 @@
     "container": {
       "description": "Various configuration related to the deployed container.",
       "properties": {
+        "args": {
+          "description": "An optional list of arguments passed to the container, overriding the image's CMD.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "command": {
+          "description": "An optional list that overrides the image's ENTRYPOINT.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "env": {
           "description": "An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an EnvVar spec.",
           "type": "object"

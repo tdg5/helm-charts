@@ -85,6 +85,10 @@ def test_static_values_and_defaults(
     # Image should be there, but for this test it will have random values.
     assert "image" in container
 
+    # Both are omitted by default, leaving the image's own ENTRYPOINT and CMD.
+    assert "args" not in container
+    assert "command" not in container
+
     assert container["imagePullPolicy"] == container_values["image"]["pullPolicy"]
 
     liveness_probe = container["livenessProbe"]
@@ -229,6 +233,41 @@ def test_affinity_can_be_customized_or_omitted_by_setting_appropriate_value(
 
     affinity = subject["spec"]["template"]["spec"].get("affinity")
     assert affinity == expected_affinity
+
+
+# The args are deliberately not in sorted order: they are rendered from a list
+# rather than the keyed-map pattern used for env and volumeMounts precisely so
+# that the order given survives, and a map would render them sorted by key.
+@pytest.mark.parametrize("expected_args", [None, ["serve", "--config", "a.yaml"]])
+def test_container_args_can_be_customized_or_omitted_by_setting_appropriate_value(
+    helm_runner: HelmRunner,
+    random_required_values: Dict[str, Any],
+    expected_args: Optional[List[str]],
+) -> None:
+    app_name = EXAMPLE_APP_NAME
+    values = random_required_values
+    values["appName"] = app_name
+    values["container"]["args"] = expected_args
+    subject = render_subject(helm_runner=helm_runner, values=values)
+
+    container = get_container_by_name(app_name, subject)
+    assert container.get("args") == expected_args
+
+
+@pytest.mark.parametrize("expected_command", [None, ["/bin/entrypoint.sh", "--"]])
+def test_container_command_can_be_customized_or_omitted_by_setting_appropriate_value(
+    helm_runner: HelmRunner,
+    random_required_values: Dict[str, Any],
+    expected_command: Optional[List[str]],
+) -> None:
+    app_name = EXAMPLE_APP_NAME
+    values = random_required_values
+    values["appName"] = app_name
+    values["container"]["command"] = expected_command
+    subject = render_subject(helm_runner=helm_runner, values=values)
+
+    container = get_container_by_name(app_name, subject)
+    assert container.get("command") == expected_command
 
 
 @pytest.mark.parametrize("expected_env", [None, EXAMPLE_MAPPING])

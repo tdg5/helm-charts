@@ -79,6 +79,18 @@ backendTrafficPolicies: {}
 # @default -- --
 container:
 
+  # -- An optional list of arguments passed to the container, overriding the
+  # image's CMD. A list rather than the keyed-map pattern used elsewhere in
+  # this chart, because argument order is significant and a map would be
+  # rendered in key order. Omitted from the container when empty, leaving the
+  # image's own CMD in place.
+  args: []
+
+  # -- An optional list that overrides the image's ENTRYPOINT. A list for the
+  # same reason as args above. Omitted from the container when empty, leaving
+  # the image's own ENTRYPOINT in place.
+  command: []
+
   # -- An optional mapping where each key is an arbitrary identifier (to
   # facilitate overriding) and each value is an EnvVar spec.
   env: {}

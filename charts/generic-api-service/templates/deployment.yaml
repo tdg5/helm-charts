@@ -64,6 +64,14 @@ spec:
       containers:
       - image: "{{ $imageRepository }}:{{ $imageTag }}"
         imagePullPolicy: {{ $imagePullPolicy }}
+        {{- with $containerValues.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $containerValues.command }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with $containerValues.env }}
         env:
           {{- values . | toYaml | nindent 10 }}
