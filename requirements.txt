@@ -10,8 +10,9 @@ cffi==2.0.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
 click==8.4.1
-cryptography==49.0.0
+cryptography==50.0.1
 darglint==1.8.1
+defusedxml==0.7.1
 distlib==0.3.8
 dlint==0.16.0
 dparse==0.6.4
@@ -41,7 +42,7 @@ mccabe==0.7.0
 mdurl==0.1.2
 mypy==2.1.0
 mypy-extensions==1.0.0
-nltk==3.9.4
+nltk==3.10.3
 nodeenv==1.9.1
 packaging==24.1
 pathspec==1.1.1
