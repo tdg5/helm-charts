@@ -92,7 +92,9 @@ container:
   command: []
 
   # -- An optional mapping where each key is an arbitrary identifier (to
-  # facilitate overriding) and each value is an EnvVar spec.
+  # facilitate overriding) and each value is an EnvVar spec. Rendered in key
+  # order, so a variable that references another via $(VAR) needs a key that
+  # sorts after that variable's key.
   env: {}
 
   # -- Various configuration related to the container image.
@@ -155,6 +157,7 @@ container:
   # -- Pod volumes to mount into the container's filesystem given in the form
   # of an object where each key is an arbitrary identifier (to facilitate
   # overridding) and each value is an object of volume mount configuration.
+  # Rendered in key order.
   volumeMounts: {}
 
 # -- Value to use for generating full object names instead of the standard
@@ -262,6 +265,7 @@ pod:
 
   # -- An optional mapping where each key is an arbitrary identifier (to faciliate overriding) and each value
   # is a reference to a secret in the same namespace to use for pulling any of the images used by the PodSpec.
+  # Rendered in key order.
   imagePullSecrets: {}
 
   # -- Labels that should be added to the pod.
@@ -275,10 +279,12 @@ pod:
 
   # -- An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value
   # is an object describing criteria for matching taints that the pod should tolerate.
+  # Rendered in key order.
   tolerations: {}
 
   # -- An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value
   # is an object describing a volume that can be mounted by containers belonging to the pod.
+  # Rendered in key order.
   volumes: {}
 
 # -- A list of onfigurations for the ports that the container/service should expose.

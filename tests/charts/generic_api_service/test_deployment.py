@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, cast
 
 import pytest
 import yaml
@@ -519,11 +519,11 @@ def test_image_pull_secrets_can_be_customized_or_omitted_by_setting_appropriate_
     image_pull_secrets = subject["spec"]["template"]["spec"].get("imagePullSecrets")
 
     if expected_image_pull_secrets:
-        expected_image_pull_secret_values = set(expected_image_pull_secrets.values())
-
-        # Order sometimes varies.
-        for image_pull_secret in image_pull_secrets:
-            assert image_pull_secret in expected_image_pull_secret_values
+        # Rendered in key order: arbitrary, one, two.
+        assert image_pull_secrets == [
+            expected_image_pull_secrets[key]
+            for key in sorted(expected_image_pull_secrets)
+        ]
     else:
         assert image_pull_secrets is None
 
@@ -595,6 +595,50 @@ def test_volumes_can_be_customized_or_omitted_by_setting_appropriate_value(
         assert volumes[0] == expected_volume
     else:
         assert volumes is None
+
+
+# Keys deliberately given out of sorted order. With five entries, a render in
+# (random) map-iteration order would pass by accident only 1 time in 120.
+_UNSORTED_KEYS = ["c-third", "e-fifth", "a-first", "d-fourth", "b-second"]
+
+
+@pytest.mark.parametrize(
+    "values_path, make_item",
+    [
+        (("container", "env"), lambda key: {"name": key.upper(), "value": key}),
+        (
+            ("container", "volumeMounts"),
+            lambda key: {"name": key, "mountPath": f"/mnt/{key}"},
+        ),
+        (("pod", "imagePullSecrets"), lambda key: {"name": key}),
+        (
+            ("pod", "tolerations"),
+            lambda key: {"key": key, "operator": "Exists", "effect": "NoSchedule"},
+        ),
+        (("pod", "volumes"), lambda key: {"name": key, "emptyDir": {}}),
+    ],
+)
+def test_mapping_backed_lists_render_in_key_order(
+    helm_runner: HelmRunner,
+    random_required_values: Dict[str, Any],
+    values_path: Tuple[str, str],
+    make_item: Callable[[str], Dict[str, Any]],
+) -> None:
+    section, field = values_path
+    app_name = EXAMPLE_APP_NAME
+    values = random_required_values
+    values["appName"] = app_name
+    values.setdefault(section, {})[field] = {
+        key: make_item(key) for key in _UNSORTED_KEYS
+    }
+    subject = render_subject(helm_runner=helm_runner, values=values)
+
+    if section == "container":
+        rendered = get_container_by_name(app_name, subject).get(field)
+    else:
+        rendered = subject["spec"]["template"]["spec"].get(field)
+
+    assert rendered == [make_item(key) for key in sorted(_UNSORTED_KEYS)]
 
 
 def get_container_by_name(

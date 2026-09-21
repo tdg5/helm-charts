@@ -47,7 +47,7 @@ generic-api-service chart and any default values that are defined.
 | container | object | -- | Various configuration related to the deployed container. |
 | container.args | list | `[]` | An optional list of arguments passed to the container, overriding the image's CMD. A list rather than the keyed-map pattern used elsewhere in this chart, because argument order is significant and a map would be rendered in key order. Omitted from the container when empty, leaving the image's own CMD in place. |
 | container.command | list | `[]` | An optional list that overrides the image's ENTRYPOINT. A list for the same reason as args above. Omitted from the container when empty, leaving the image's own ENTRYPOINT in place. |
-| container.env | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an EnvVar spec. |
+| container.env | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an EnvVar spec. Rendered in key order, so a variable that references another via $(VAR) needs a key that sorts after that variable's key. |
 | container.image | object | -- | Various configuration related to the container image. |
 | container.image.pullPolicy | string | `"IfNotPresent"` | The pull policy to use for the image. |
 | container.image.repository | string | `""` | The repository containing the image that should be deployed. |
@@ -63,7 +63,7 @@ generic-api-service chart and any default values that are defined.
 | container.resources | object | `{}` | The resources that the container requests and is limited to. |
 | container.securityContext | object | `{}` | The security context that should be applied to the container. |
 | container.startupProbe | object | -- | Startup probe configuration for the container. |
-| container.volumeMounts | object | `{}` | Pod volumes to mount into the container's filesystem given in the form of an object where each key is an arbitrary identifier (to facilitate overridding) and each value is an object of volume mount configuration. |
+| container.volumeMounts | object | `{}` | Pod volumes to mount into the container's filesystem given in the form of an object where each key is an arbitrary identifier (to facilitate overridding) and each value is an object of volume mount configuration. Rendered in key order. |
 | fullNameOverride | string | `""` | Value to use for generating full object names instead of the standard template based logic. |
 | httpRoutes | object | -- | An optional map where each key is an arbitrary identifier (to facilitate overriding) and each value is an object of Gateway API HTTPRoute configuration. HTTPRoutes are the Gateway API mechanism for routing traffic from a Gateway to this chart's service. |
 | namespace | object | -- | Various configuration related to the namespace that resources should be deployed to. |
@@ -73,12 +73,12 @@ generic-api-service chart and any default values that are defined.
 | pod | object | -- | Various configuration for the application deployment pod. |
 | pod.affinity | object | `{}` | Affinity rules that should be applied to the pod to customize scheduling. |
 | pod.annotations | object | `{}` | Annotations that should be added to the pod. |
-| pod.imagePullSecrets | object | `{}` | An optional mapping where each key is an arbitrary identifier (to faciliate overriding) and each value is a reference to a secret in the same namespace to use for pulling any of the images used by the PodSpec. |
+| pod.imagePullSecrets | object | `{}` | An optional mapping where each key is an arbitrary identifier (to faciliate overriding) and each value is a reference to a secret in the same namespace to use for pulling any of the images used by the PodSpec. Rendered in key order. |
 | pod.labels | object | `{}` | Labels that should be added to the pod. |
 | pod.nodeSelector | object | `{}` | An optional selector which must be true for the pod to fit on a node. |
 | pod.securityContext | object | `{}` | The security context that should be applied to the pod. |
-| pod.tolerations | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing criteria for matching taints that the pod should tolerate. |
-| pod.volumes | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing a volume that can be mounted by containers belonging to the pod. |
+| pod.tolerations | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing criteria for matching taints that the pod should tolerate. Rendered in key order. |
+| pod.volumes | object | `{}` | An optional mapping where each key is an arbitrary identifier (to facilitate overriding) and each value is an object describing a volume that can be mounted by containers belonging to the pod. Rendered in key order. |
 | ports | object | -- | A list of onfigurations for the ports that the container/service should expose. |
 | ports.http | object | -- | An arbitrary alias for the port to facilitate overriding. |
 | ports.http.containerPort | int | `80` | The port that the container should publish. |

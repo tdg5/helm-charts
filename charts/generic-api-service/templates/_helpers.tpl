@@ -147,3 +147,21 @@ BackendTrafficPolicy resources.
 {{- end }}
 {{- print $apiVersion -}}
 {{- end -}}
+
+{{/*
+Render the values of a mapping as a YAML list, ordered by key. Several list
+fields (env, volumeMounts, imagePullSecrets, tolerations, volumes) are exposed
+as mappings so individual entries can be overridden by key. Sprig's `values`
+returns entries in Go's randomized map-iteration order, so a list built with it
+could come out in a different order on every render; a GitOps tool diffing
+successive renders then sees drift and rolls the workload. Ordering by key keeps
+renders deterministic and lets users control order through the keys they pick.
+*/}}
+{{- define "generic-api-service.values-sorted-by-key" -}}
+{{- $mapping := . -}}
+{{- $sorted := list -}}
+{{- range $key := keys $mapping | sortAlpha -}}
+{{- $sorted = append $sorted (get $mapping $key) -}}
+{{- end -}}
+{{- toYaml $sorted -}}
+{{- end -}}

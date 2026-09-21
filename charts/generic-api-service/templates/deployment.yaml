@@ -74,7 +74,7 @@ spec:
         {{- end }}
         {{- with $containerValues.env }}
         env:
-          {{- values . | toYaml | nindent 10 }}
+          {{- include "generic-api-service.values-sorted-by-key" . | nindent 10 }}
         {{- end -}}
         {{- with $containerValues.livenessProbe }}
         livenessProbe:
@@ -107,11 +107,11 @@ spec:
         {{- end }}
         {{- with $containerValues.volumeMounts }}
         volumeMounts:
-          {{- values . | toYaml | nindent 10 }}
+          {{- include "generic-api-service.values-sorted-by-key" . | nindent 10 }}
         {{- end }}
       {{- with $podValues.imagePullSecrets }}
       imagePullSecrets:
-        {{- values . | toYaml | nindent 8 }}
+        {{- include "generic-api-service.values-sorted-by-key" . | nindent 8 }}
       {{- end }}
       {{- with $podValues.nodeSelector }}
       nodeSelector:
@@ -124,9 +124,9 @@ spec:
       {{- end }}
       {{- with $podValues.tolerations }}
       tolerations:
-        {{- values . | toYaml | nindent 8 }}
+        {{- include "generic-api-service.values-sorted-by-key" . | nindent 8 }}
       {{- end }}
       {{- with $podValues.volumes }}
       volumes:
-        {{- values . | toYaml | nindent 8 }}
+        {{- include "generic-api-service.values-sorted-by-key" . | nindent 8 }}
       {{- end }}
